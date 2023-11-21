@@ -1,0 +1,8 @@
+- name: Install Python
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install python
+      raw:
+        "yum install -y python3"

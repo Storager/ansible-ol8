@@ -1,0 +1,16 @@
+- name: Install Podman
+  hosts: all
+  become: true
+  tasks:
+    - name: add sudo user without authentication
+      lineinfile:
+        path: "/etc/sudoers.d/{{ lookup('env', 'USER') }}"
+        line: "{{ lookup('env', 'USER') }} ALL=(ALL) NOPASSWD:ALL"
+        create: yes
+        state: present
+        validate: /usr/sbin/visudo -cf %s
+    - name: Install Podman
+      dnf:
+        # name: "container-tools:ol8"
+        name: podman
+        state: latest

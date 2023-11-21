@@ -1,0 +1,48 @@
+- name: Install Docker
+  hosts: all
+  become: true
+  tasks:
+    - name: Uninstal Podman
+      dnf:
+        name:
+          - docker
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-engine
+          - podman
+          - runc
+          - container.io
+        state: absent
+
+    - name: Add repository
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+        mode: "0644"
+
+    - name: Install docker
+      dnf:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Enable service
+      systemd:
+        name: docker
+        state: started
+        enabled: true  
+    - name: Add user to group
+      user:
+        name: "{{ lookup('env', 'USER') }}"
+        groups: docker
+        append: true
+      tags:
+        - username
